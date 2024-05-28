@@ -114,4 +114,33 @@ router.get("/profile/:username", async (req, res) => {
   }
 });
 
+// Add a comment to a post
+router.post('/:postId/comments', async (req, res) => {
+  const { text, userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ msg: 'User ID is required' });
+  }
+
+  try {
+    const post = await Post.findById(req.params.postId);
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not found' });
+    }
+
+    const newComment = {
+      userId,
+      text,
+    };
+
+    post.comments.unshift(newComment);
+    await post.save();
+
+    res.status(200).json(post.comments);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;

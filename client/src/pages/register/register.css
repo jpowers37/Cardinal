@@ -1,7 +1,7 @@
 .login {
   width: 100vw;
   height: 100vh;
-  background-color: #f0f2f5;
+  background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,4 +81,11 @@
     font-size: 20px;
     font-weight: 500;
     cursor: pointer;
+}
+
+.logoImg {
+  height: 40px; 
+  margin-left: 10px;
+  margin-right: 10px; 
+  vertical-align: middle;
 }

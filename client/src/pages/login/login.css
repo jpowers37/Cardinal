@@ -90,3 +90,10 @@
     font-weight: 500;
     cursor: pointer;
 }
+
+.logoImg {
+  height: 40px; 
+  margin-left: 10px;
+  margin-right: 10px; 
+  vertical-align: middle;
+}

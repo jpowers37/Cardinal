@@ -14,14 +14,32 @@ export default function Rightbar({ user }) {
   const [followed, setFollowed] = useState(
     currentUser.followings.includes(user?._id)
   );
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    city: "",
+    from: "",
+    relationship: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        city: user.city || "",
+        from: user.from || "",
+        relationship: user.relationship || "",
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     const getFriends = async () => {
-      try {
-        const friendList = await axios.get(baseUrl + `/api/users/friends/${user._id}`);
-        setFriends(friendList.data);
-      } catch (err) {
-        console.log(err);
+      if (user) {
+        try {
+          const friendList = await axios.get(baseUrl + `/api/users/friends/${user._id}`);
+          setFriends(friendList.data);
+        } catch (err) {
+          console.log(err);
+        }
       }
     };
     getFriends();
@@ -46,6 +64,30 @@ export default function Rightbar({ user }) {
     }
   };
 
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(baseUrl + `/api/users/${user._id}`, { ...formData, userId: currentUser._id });
+      setIsEditing(false);
+      // Update the local user state
+      user.city = formData.city;
+      user.from = formData.from;
+      user.relationship = formData.relationship;
+      // Optionally update the global user state if needed
+      dispatch({ type: "UPDATE_USER", payload: user });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const HomeRightbar = () => {
     return (
       <>
@@ -60,6 +102,10 @@ export default function Rightbar({ user }) {
   };
 
   const ProfileRightbar = () => {
+    if (!user) {
+      return null; // or a loading indicator
+    }
+    
     return (
       <>
         {user.username !== currentUser.username && (
@@ -70,24 +116,68 @@ export default function Rightbar({ user }) {
         )}
         <h4 className="rightbarTitle">User information</h4>
         <div className="rightbarInfo">
-          <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">City:</span>
-            <span className="rightbarInfoValue">{user.city}</span>
-          </div>
-          <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">From:</span>
-            <span className="rightbarInfoValue">{user.from}</span>
-          </div>
-          <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">Relationship:</span>
-            <span className="rightbarInfoValue">
-              {user.relationship === 1
-                ? "Single"
-                : user.relationship === 2
-                ? "Married"
-                : "-"}
-            </span>
-          </div>
+          {isEditing ? (
+            <form className="rightbarInfoForm" onSubmit={handleFormSubmit}>
+              <div className="rightbarInfoItem">
+                <span className="rightbarInfoKey">City:</span>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  placeholder="Enter city"
+                />
+              </div>
+              <div className="rightbarInfoItem">
+                <span className="rightbarInfoKey">From:</span>
+                <input
+                  type="text"
+                  name="from"
+                  value={formData.from}
+                  onChange={handleInputChange}
+                  placeholder="Enter origin"
+                />
+              </div>
+              <div className="rightbarInfoItem">
+                <span className="rightbarInfoKey">Relationship:</span>
+                <select
+                  name="relationship"
+                  value={formData.relationship}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select relationship status</option>
+                  <option value="1">Single</option>
+                  <option value="2">Married</option>
+                </select>
+              </div>
+              <button type="submit">Save</button>
+              <button type="button" onClick={handleEditToggle}>Cancel</button>
+            </form>
+          ) : (
+            <>
+              <div className="rightbarInfoItem">
+                <span className="rightbarInfoKey">City:</span>
+                <span className="rightbarInfoValue">{user.city || "N/A"}</span>
+              </div>
+              <div className="rightbarInfoItem">
+                <span className="rightbarInfoKey">From:</span>
+                <span className="rightbarInfoValue">{user.from || "N/A"}</span>
+              </div>
+              <div className="rightbarInfoItem">
+                <span className="rightbarInfoKey">Relationship:</span>
+                <span className="rightbarInfoValue">
+                  {user.relationship === 1
+                    ? "Single"
+                    : user.relationship === 2
+                    ? "Married"
+                    : "N/A"}
+                </span>
+              </div>
+              {user.username === currentUser.username && (
+                <button onClick={handleEditToggle}>Edit</button>
+              )}
+            </>
+          )}
         </div>
         <h4 className="rightbarTitle">User friends</h4>
         <div className="rightbarFollowings">

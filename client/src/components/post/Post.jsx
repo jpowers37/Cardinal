@@ -3,6 +3,7 @@ import { MoreVert } from "@material-ui/icons";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { format } from "timeago.js";
+import Comment from './Comment';
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -22,6 +23,7 @@ export default function Post({ post, onDelete, onUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedDesc, setUpdatedDesc] = useState(post.desc);
   const { user: currentUser } = useContext(AuthContext);
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
     setIsLiked(post.likes.includes(currentUser._id));
@@ -136,24 +138,17 @@ export default function Post({ post, onDelete, onUpdate }) {
       </div>
       <div className="postBottom">
         <div className="postBottomLeft">
-          <img
-            className="likeIcon"
-            src={`like.png`}
-            onClick={likeHandler}
-            alt=""
-          />
-          {/* <img
-            className="likeIcon"
-            src={`${PF}heart.png`}
-            onClick={likeHandler}
-            alt=""
-          /> */}
-          <span className="postLikeCounter">{like} people like it</span>
+          
+          <button className="likeButton" onClick={likeHandler}>Like</button>
+          <span className="postLikeCounter">{like} people like it</span> 
         </div>
         <div className="postBottomRight">
-          <span className="postCommentText">{post.comment} comments</span>
+        <span className="postCommentText" onClick={() => setShowComments(!showComments)}>
+              {post.comments.length} comments
+            </span>
         </div>
       </div>
+      {showComments && <Comment postId={post._id} />}
     </div>
   </div>
 );

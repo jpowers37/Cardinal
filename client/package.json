@@ -35,22 +35,25 @@
       "react-app",
       "react-app/jest"
     ]
-  },
+  }, 
   "browserslist": {
     "production": [
       ">0.2%",
       "not dead",
       "not op_mini all"
     ],
-    "development": [
+    "development": [ 
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
     ]
   },
-
-  
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "eslint": "^9.3.0",
+    "eslint-config-react-app": "^7.0.1"
+  },
+  "resolutions": {
+    "**/timeago.js": "skip-source-maps"
   }
 }

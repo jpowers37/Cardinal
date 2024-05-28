@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const multer = require("multer");
 const path = require("path");
 const express = require("express");
-
+ 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -17,13 +17,13 @@ router.put("/:id/profilePicture", async (req, res) => {
       await user.save();
       res.status(200).json("Profile picture updated successfully.");
     } else {
-      res.status(404).json("User not found.");
+      res.status(404).json("User not found."); 
     }
   } catch (err) {
     res.status(500).json(err);
   }
 });
-
+ 
 // Upload cover picture
 router.put("/:id/coverPicture", async (req, res) => {
   try {
